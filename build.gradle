@@ -1,0 +1,58 @@
+plugins {
+    id 'groovy'
+    id 'java-library'
+}
+
+// ── versions ────────────────────────────────────────────────────────────────
+ext {
+    groovyVersion = "4.0.15"
+    // Path to the local QuPath installation's app/ directory.
+    // Override with -PqupathAppDir=... on the command line if needed.
+    qupathAppDir = findProperty("qupathAppDir")
+        ?: "${System.getProperty('user.home')}/AppData/Local/QuPath-0.7.0/app"
+}
+
+group   = "io.github.yourname"
+version = "0.1.0"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Compile against the exact JARs shipped with the local QuPath installation.
+    // These are compileOnly — QuPath provides them at runtime.
+    compileOnly fileTree(dir: qupathAppDir, include: "*.jar")
+
+    // groovy core is shipped by QuPath — compile only, do NOT bundle.
+    compileOnly "org.apache.groovy:groovy:${groovyVersion}"
+    // groovy-json removed: ServerClient now uses Gson, which QuPath already ships.
+}
+
+// ── Plain JAR (all deps are provided by QuPath at runtime) ──────────────────
+jar {
+    archiveBaseName = "qupath-yolo-al"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+            "Implementation-Title":   "YOLO Active Learning for QuPath",
+            "Implementation-Version": version
+        )
+    }
+}
+
+// ── Install task: copy JAR to QuPath extensions dir ────────────────────────
+// Set QUPATH_EXTENSIONS_DIR env var or pass -PqupathExtDir=...  on command line.
+task installExtension(type: Copy, dependsOn: jar) {
+    def dest = System.getenv("QUPATH_EXTENSIONS_DIR")
+        ?: project.findProperty("qupathExtDir")
+        ?: "${System.getProperty('user.home')}/QuPath/v0.7/extensions"
+    from jar.archiveFile
+    into dest
+    doLast { println "Installed to: $dest" }
+}

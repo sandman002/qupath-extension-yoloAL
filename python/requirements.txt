@@ -1,0 +1,19 @@
+# PyTorch with CUDA 12.1 — GPU training on NVIDIA cards.
+# If you don't have a GPU, remove the --extra-index-url line and torch/torchvision
+# will fall back to CPU-only wheels from PyPI.
+--index-url https://download.pytorch.org/whl/cu130
+torch>=2.1.0
+torchvision>=0.16.0
+
+# Core
+ultralytics>=8.3.0
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+
+Pillow>=9.0.0
+numpy>=1.24.0
+tiffslide>=2.4.0,<3.0
+zarr<3.0
+openslide-python>=1.3.1
+openslide-bin
+tqdm
