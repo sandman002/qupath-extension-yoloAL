@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Download QuPath 0.7.0
+        run: |
+          wget -q https://github.com/qupath/qupath/releases/download/v0.7.0/QuPath-v0.7.0-Linux.tar.xz
+          tar -xf QuPath-v0.7.0-Linux.tar.xz
+          QUPATH_APP=$(find . -maxdepth 3 -type d -name "app" | grep -i qupath | head -1)
+          echo "QUPATH_APP_DIR=$(realpath $QUPATH_APP)" >> $GITHUB_ENV
+
+      - name: Build JAR
+        run: |
+          chmod +x gradlew
+          ./gradlew jar -PqupathAppDir="$QUPATH_APP_DIR"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+          generate_release_notes: true
