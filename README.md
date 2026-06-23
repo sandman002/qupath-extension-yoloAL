@@ -185,6 +185,19 @@ qupath-extension-yoloAL/
 manandhar.sandeep@gmail.com
 
 ---
+## Citation
+
+If you use this work, please cite:
+
+```bibtex
+@article{Sandman2026MyoSAM,
+  title={Differential Cardiac Remodeling: Patterns of Cardiomyocyte Morphometry in Multiple Patient Conditions},
+  author={Sandeep Manandhar and Yuxin Wu et al.},
+  journal={Cardiovascular Research},
+  year={2026},
+}
+```
+---
 
 ## License
 
